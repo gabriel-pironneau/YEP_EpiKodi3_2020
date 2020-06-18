@@ -3,7 +3,7 @@ from flask import Flask, make_response, request, redirect, url_for, send_from_di
 from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = './uploads'
-ALLOWED_EXTENSIONS = { 'png', 'jpg' } #to change for music files
+ALLOWED_EXTENSIONS = { 'png', 'jpg', 'mp3' } #to change for music files
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), "file_transfer/uploads")
