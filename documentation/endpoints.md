@@ -10,7 +10,7 @@ Note : file must be send as Multipart in the body and the format for the file is
 
 __Accepted formats are .mp3, .png & .jpg__
 
-Parameters:
+Parameter:
 
 | Part Name    | Value |
 |:------- | -------:|
@@ -45,6 +45,7 @@ URL: `127.0.0.1:5000/file/:filename`
 ## `Delete single file`
 
 Method: `DELETE`
+
 URL: `127.0.0.1:5000/file/:filename`
 
 
