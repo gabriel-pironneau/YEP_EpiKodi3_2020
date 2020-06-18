@@ -6,7 +6,7 @@ UPLOAD_FOLDER = './uploads'
 ALLOWED_EXTENSIONS = { 'png', 'jpg' } #to change for music files
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = "/Users/gabriel/Epitech/tek3/free_project/YEP_EpiKodi3_2020/server/file_transfer/uploads"
+app.config['UPLOAD_FOLDER'] = "./uploads"
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
