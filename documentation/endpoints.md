@@ -6,7 +6,10 @@ Method: `POST`
 
 URL: `127.0.0.1:5000/file`
 
-Note : file must be send as Multipart in the body and the format for the file is **File Content**. __Accepted format are .mp3, .png & .jpg__
+Note : file must be send as Multipart in the body and the format for the file is *File Content*.
+
+__Accepted format are .mp3, .png & .jpg__
+
 Parameters:
 
 | Part Name    | Value |
