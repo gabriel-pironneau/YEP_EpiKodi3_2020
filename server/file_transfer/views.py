@@ -1,11 +1,11 @@
 import os
 from flask import Flask, make_response, request, redirect, url_for, send_from_directory
 from werkzeug.utils import secure_filename
+from database import app
 
 UPLOAD_FOLDER = './uploads'
 ALLOWED_EXTENSIONS = { 'png', 'jpg', 'mp3' } #to change for music files
 
-app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), "file_transfer/uploads")
 
 print(os.getcwd())
