@@ -4,6 +4,9 @@ from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtMultimedia import *
 from PyQt5.QtWidgets import (QApplication, QFileDialog, QHBoxLayout, QLabel,
         QPushButton, QLineEdit, QAction, QMenuBar, QDialog, QSizePolicy, QSlider, QStyle, QVBoxLayout, QWidget, QStatusBar)
+import cv2, pafy
+import numpy as np
+import easygui
 
 class Form(QDialog):
 
@@ -11,27 +14,89 @@ class Form(QDialog):
         super(Form, self).__init__(parent)
 
         layout = QVBoxLayout()
+        btnSize = QSize(10, 10)
 
-        self.buttonVideo = QButtonV()
-        btnSize = QSize(20, 20)
-        self.buttonVideo.setFixedHeight(40)
-        layout.addWidget(self.buttonVideo)
-        self.buttonAudio = QButtonA()
-        btnSize = QSize(20, 20)
-        self.buttonAudio.setFixedHeight(40)
-        layout.addWidget(self.buttonAudio)
+
+        self.buttonV = QPushButton('Video', self)
+        self.buttonV.setFont(QFont("Noto Sans", 8))
+        self.buttonV.setIconSize(btnSize)
+        self.buttonV.clicked.connect(self.showV)
+        layout.addWidget(self.buttonV)
+
+        self.buttonB = QPushButton('Pictures', self)
+        self.buttonB.setFont(QFont("Noto Sans", 8))
+        self.buttonB.setIconSize(btnSize)
+        self.buttonB.clicked.connect(self.showB)
+        layout.addWidget(self.buttonB)
+
+
+        ##layout.addWidget(self.buttonAudio)
+        self.edit = QLineEdit("Your youtube link here")
+        layout.addWidget(self.edit)
+        self.button = QPushButton("read video yt")
+        self.button.setFont(QFont("Noto Sans", 8))
+        self.button.clicked.connect(self.Read)
+        layout.addWidget(self.button)
         self.setLayout(layout)
 
+    def Read(self):
+        try:
+            url = self.edit.text()
+            vPafy = pafy.new(url)
+            play = vPafy.getbest()
 
-class AudioPlayer(QWidget):
+            cap = cv2.VideoCapture(play.url)
+            while (True):
+                ret,frame = cap.read()
+
+                cv2.imshow('youtube',frame)
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+
+            cap.release()
+            cv2.destroyAllWindows()
+        except:
+            easygui.msgbox("this is not a valid link", title="An arror happened")
+
+    def showV(self):
+        self.hide()
+        self.player = VideoPlayer()
+        self.player.setWindowTitle("KodiVideo")
+        self.player.resize(1920, 1000)
+        self.player.show()
+
+    def showB(self):
+        self.hide()
+        self.player = Pictures()
+        self.player.setWindowTitle("KodiPic")
+        self.player.resize(1920, 1000)
+        self.player.show()
+
+
+class Pictures(QDialog):
 
     def __init__(self, parent=None):
-        super(AudioPlayer, self).__init__(parent)
+        super(Pictures, self).__init__(parent)
 
 
         btnSize = QSize(10, 10)
 
         self.label = QLabel(self)
+
+
+        ButtonV = QPushButton("Vidéo")
+        ButtonV.setFixedHeight(24)
+        ButtonV.setIconSize(btnSize)
+        ButtonV.setFont(QFont("Noto Sans", 8))
+        ButtonV.setIcon(QIcon.fromTheme("document-open", QIcon("D:/_Qt/img/open.png")))
+        ButtonV.clicked.connect(self.navV)
+
+        ButtonB = QPushButton("Main page")
+        ButtonB.setFixedHeight(24)
+        ButtonB.setIconSize(btnSize)
+        ButtonB.setFont(QFont("Noto Sans", 8))
+        ButtonB.setIcon(QIcon.fromTheme("document-open", QIcon("D:/_Qt/img/open.png")))
+        ButtonB.clicked.connect(self.navB)
 
         openButton = QPushButton("Open picture")
         openButton.setToolTip("Open picture File")
@@ -45,7 +110,10 @@ class AudioPlayer(QWidget):
 
         controlLayout = QHBoxLayout()
         controlLayout.setContentsMargins(0, 0, 0, 0)
+        controlLayout.addWidget(ButtonB)
+        controlLayout.addWidget(ButtonV)
         controlLayout.addWidget(openButton)
+
 
         self.layout = QVBoxLayout()
         self.layout.addLayout(controlLayout)
@@ -63,18 +131,47 @@ class AudioPlayer(QWidget):
             self.layout.addWidget(self.label)
             self.resize(pixmap.width(), pixmap.height())
 
+    def navV(self):
+        self.hide()
+        self.form = VideoPlayer()
+        self.form.resize(1920, 1000)
+        self.form.show()
+
+    def navB(self):
+        self.hide()
+        self.form = Form()
+        self.form.resize(1920, 1000)
+        self.form.show()
 
 
-
-class VideoPlayer(QWidget):
+class VideoPlayer(QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+
+        geometry = app.desktop().availableGeometry()
+        geometry.setHeight(geometry.height())
+
+        self.setGeometry(geometry)
 
         self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
 
         btnSize = QSize(16, 16)
         videoWidget = QVideoWidget()
+
+        ButtonP = QPushButton("Pictures")
+        ButtonP.setFixedHeight(24)
+        ButtonP.setIconSize(btnSize)
+        ButtonP.setFont(QFont("Noto Sans", 8))
+        ButtonP.setIcon(QIcon.fromTheme("document-open", QIcon("D:/_Qt/img/open.png")))
+        ButtonP.clicked.connect(self.navP)
+
+        ButtonB = QPushButton("Main page")
+        ButtonB.setFixedHeight(24)
+        ButtonB.setIconSize(btnSize)
+        ButtonB.setFont(QFont("Noto Sans", 8))
+        ButtonB.setIcon(QIcon.fromTheme("document-open", QIcon("D:/_Qt/img/open.png")))
+        ButtonB.clicked.connect(self.navB)
 
         openButton = QPushButton("Open Video")
         openButton.setToolTip("Open Video File")
@@ -107,6 +204,8 @@ class VideoPlayer(QWidget):
         controlLayout.addWidget(self.positionSlider)
 
         layout = QVBoxLayout()
+        controlLayout.addWidget(ButtonB)
+        controlLayout.addWidget(ButtonP)
         layout.addWidget(videoWidget)
         layout.addLayout(controlLayout)
         layout.addWidget(self.statusBar)
@@ -130,6 +229,18 @@ class VideoPlayer(QWidget):
             self.playButton.setEnabled(True)
             self.statusBar.showMessage(fileName)
             self.play()
+
+    def navP(self):
+        self.hide()
+        self.form = Pictures()
+        self.form.resize(1920, 1000)
+        self.form.show()
+
+    def navB(self):
+        self.hide()
+        self.form = Form()
+        self.form.resize(1920, 1000)
+        self.form.show()
 
     def play(self):
         if self.mediaPlayer.state() == QMediaPlayer.PlayingState:
@@ -158,45 +269,39 @@ class VideoPlayer(QWidget):
         self.playButton.setEnabled(False)
         self.statusBar.showMessage("Error: " + self.mediaPlayer.errorString())
 
-class QButtonV(QWidget):
-    def __init__(self, parent=None):
-        super(QButtonV, self).__init__(parent)
-        #supperQButton.__init__(self, parent)
-        self.player = VideoPlayer()
-        self.player.setWindowTitle("KodiVideo")
-        self.player.resize(800, 600)
-        self.button = QPushButton('Video', self)
-        self.button.setFont(QFont("Noto Sans", 8))
-        btnSize = QSize(10, 10)
-        self.button.setIconSize(btnSize)
-        self.name='me'
-        self.button.clicked.connect(self.calluser)
-    def calluser(self):
-        self.player.show()
 
-class QButtonA(QWidget):
+class QButtonC(QWidget):
     def __init__(self, parent=None):
-        super(QButtonA, self).__init__(parent)
+        super(QButtonC, self).__init__(parent)
         #supperQButton.__init__(self, parent)
-        self.player = AudioPlayer()
-        self.player.setWindowTitle("KodiPic")
-        self.player.resize(800, 600)
-        self.button = QPushButton('Pictures', self)
+        self.player = Form()
+        self.player.setWindowTitle("mainWindow")
+        self.player.resize(1920, 1000)
+        self.layout = QVBoxLayout()
+        self.edit = QLineEdit("name")
+        self.layout.addWidget(self.edit)
+        self.edit2 = QLineEdit("pass")
+        self.layout.addWidget(self.edit2)
+        self.button = QPushButton('connection', self)
         self.button.setFont(QFont("Noto Sans", 8))
         btnSize = QSize(10, 10)
         self.button.setIconSize(btnSize)
         self.name='me'
         self.button.clicked.connect(self.calluser)
+        self.layout.addWidget(self.button)
+        self.setLayout(self.layout)
+
     def calluser(self):
+        self.hide()
         self.player.show()
 
 if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)
 
-    form = Form()
-    form.resize(1920, 1080)
+    form = QButtonC()
+    form.setWindowTitle("connection page")
+    form.resize(800, 600)
     form.show()
-
 
     sys.exit(app.exec_())
