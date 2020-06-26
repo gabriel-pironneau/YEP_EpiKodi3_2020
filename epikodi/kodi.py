@@ -274,9 +274,6 @@ class QButtonC(QWidget):
     def __init__(self, parent=None):
         super(QButtonC, self).__init__(parent)
         #supperQButton.__init__(self, parent)
-        self.player = Form()
-        self.player.setWindowTitle("mainWindow")
-        self.player.resize(1920, 1000)
         self.layout = QVBoxLayout()
         self.edit = QLineEdit("name")
         self.layout.addWidget(self.edit)
@@ -286,12 +283,80 @@ class QButtonC(QWidget):
         self.button.setFont(QFont("Noto Sans", 8))
         btnSize = QSize(10, 10)
         self.button.setIconSize(btnSize)
-        self.name='me'
         self.button.clicked.connect(self.calluser)
         self.layout.addWidget(self.button)
+        self.button2 = QPushButton('create account', self)
+        self.button2.setFont(QFont("Noto Sans", 8))
+        btnSize = QSize(10, 10)
+        self.button2.setIconSize(btnSize)
+        self.button2.clicked.connect(self.calluser2)
+        self.layout.addWidget(self.button2)
         self.setLayout(self.layout)
 
     def calluser(self):
+        check = 0
+        lineCheck = self.edit.text() + ';' + self.edit2.text() + '\n'
+        file1 = open('connection.txt', 'r')
+        Lines = file1.readlines()
+        for line in Lines:
+            if line == lineCheck:
+                check = 1
+                self.player = Form()
+                self.player.setWindowTitle("mainWindow")
+                self.player.resize(1920, 1000)
+                self.hide()
+                self.player.show()
+                break
+        if check == 0:
+            easygui.msgbox("this account does not exist", title="An arror happened")
+
+    def calluser2(self):
+        self.player = QButtonR()
+        self.player.setWindowTitle("create account")
+        self.player.resize(800, 600)
+        self.hide()
+        self.player.show()
+
+class QButtonR(QWidget):
+    def __init__(self, parent=None):
+        super(QButtonR, self).__init__(parent)
+        #supperQButton.__init__(self, parent)
+        self.layout = QVBoxLayout()
+        self.edit = QLineEdit("name")
+        self.layout.addWidget(self.edit)
+        self.edit2 = QLineEdit("pass")
+        self.layout.addWidget(self.edit2)
+        self.button = QPushButton('create account', self)
+        self.button.setFont(QFont("Noto Sans", 8))
+        btnSize = QSize(10, 10)
+        self.button.setIconSize(btnSize)
+        self.button.clicked.connect(self.calluser)
+        self.layout.addWidget(self.button)
+        self.button2 = QPushButton('connection', self)
+        self.button2.setFont(QFont("Noto Sans", 8))
+        btnSize = QSize(10, 10)
+        self.button2.setIconSize(btnSize)
+        self.button2.clicked.connect(self.calluser2)
+        self.layout.addWidget(self.button2)
+        self.setLayout(self.layout)
+
+    def calluser(self):
+        name = self.edit.text()
+        passw = self.edit2.text()
+
+        with open("connection.txt", "a") as myfile:
+            myfile.write(f"{name};{passw}\n")
+
+        self.player = QButtonC()
+        self.player.setWindowTitle("connection")
+        self.player.resize(800, 600)
+        self.hide()
+        self.player.show()
+
+    def calluser2(self):
+        self.player = QButtonC()
+        self.player.setWindowTitle("connection")
+        self.player.resize(800, 600)
         self.hide()
         self.player.show()
 
