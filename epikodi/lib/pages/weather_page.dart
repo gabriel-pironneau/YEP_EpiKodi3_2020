@@ -22,6 +22,7 @@ class _WeatherPageState extends State<WeatherPage> {
   Map<String, IconData> _icon = {
     "Clouds": WeatherIcons.wiDayCloudy,
     "Rain": WeatherIcons.wiDayRain,
+    "Thunderstorm": WeatherIcons.wiDayThunderstorm
   };
 
   _incrementCounter() async {

@@ -22,6 +22,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  characters:
+    dependency: transitive
+    description:
+      name: characters
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   charcode:
     dependency: transitive
     description:
@@ -43,6 +50,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  cloud_firestore:
+    dependency: "direct main"
+    description:
+      name: cloud_firestore
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.8.2+3"
   collection:
     dependency: transitive
     description:
@@ -99,6 +113,27 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.10.0"
+  firebase_auth:
+    dependency: "direct main"
+    description:
+      name: firebase_auth
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.7.0"
+  firebase_core:
+    dependency: transitive
+    description:
+      name: firebase_core
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.5+1"
+  flappy_search_bar:
+    dependency: "direct main"
+    description:
+      name: flappy_search_bar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.4.1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -118,6 +153,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.8"
+  flutter_staggered_grid_view:
+    dependency: transitive
+    description:
+      name: flutter_staggered_grid_view
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.0"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -170,6 +212,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.1"
+  json_annotation:
+    dependency: transitive
+    description:
+      name: json_annotation
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.1"
   location:
     dependency: "direct main"
     description:
@@ -198,6 +247,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.6+3"
+  oauth2:
+    dependency: transitive
+    description:
+      name: oauth2
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.6.1"
   open_iconic_flutter:
     dependency: transitive
     description:
@@ -289,6 +345,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.13"
+  provider:
+    dependency: "direct main"
+    description:
+      name: provider
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.2.0"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -329,6 +392,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
+  spotify:
+    dependency: "direct main"
+    description:
+      name: spotify
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.6"
   stack_trace:
     dependency: transitive
     description:
@@ -442,5 +512,5 @@ packages:
     source: hosted
     version: "7.0.0+3"
 sdks:
-  dart: ">=2.7.0 <3.0.0"
+  dart: ">=2.9.0-14.0.dev <3.0.0"
   flutter: ">=1.18.0-6.0.pre <2.0.0"

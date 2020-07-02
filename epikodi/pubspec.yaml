@@ -33,6 +33,12 @@ dependencies:
   flutter_weather_icons: 1.0.2
   youtube_player_flutter: ^7.0.0
   flutter_svg: 0.18.0
+  flappy_search_bar: 1.4.1
+  spotify: 0.3.6
+  cloud_firestore: ^0.8.2+3
+  firebase_auth: ^0.7.0
+  provider: ^3.1.0
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

@@ -31,6 +31,21 @@ class _VideoPageState extends State<VideoPage> {
   FileType _pickingType = FileType.video;
   TextEditingController _controller = new TextEditingController();
 
+  void saveafterdelete(String name) async {
+    final SharedPreferences prefs = await _prefs;
+    final String _data = (prefs.getString('video_added') ?? null);
+    String lastdata;
+    //print(_data);
+    Map<String, dynamic> _mydata = json.decode(_data);
+    print(_mydata);
+    _mydata.remove(name);
+    print(_mydata);
+    lastdata = json.encode(_mydata);
+    prefs.setString('video_added', lastdata).then((bool success) {
+      return;
+    });
+  }
+
   void _openFileExplorer() async {
     final SharedPreferences prefs = await _prefs;
     final String _pathsTM = prefs.getString('video_added') ?? null;
@@ -291,29 +306,49 @@ class _VideoPageState extends State<VideoPage> {
                           final path = isMultiPath
                               ? snapshot.data.values.toList()[index].toString()
                               : _paths;
-                          return new ListTile(
-                            leading: Container(
-                                height: 40,
-                                width: 40,
-                                color: Colors.grey[350],
-                                child: Icon(
-                                  Icons.movie,
-                                  color: Colors.blue,
-                                )),
-                            title: new Text(
-                              name,
+                          return Dismissible(
+                             background: Container(
+                              color: Colors.red,
+                              child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Icon(Icons.delete),
+                                  )),
                             ),
-                            subtitle: new Text(path),
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => VideoPlayerPage(
-                                      videoPlayerController: VideoPlayerController.file(File(path)),
-                                      looping: true,
-                                      name: name,
-                              )));
+                            key: Key(name),
+                            onDismissed: (direction) {
+                              saveafterdelete(name);
+                              setState(() {
+                                //snapshot.data.remove(snapshot.data[index]);
+                                Scaffold.of(context).showSnackBar(SnackBar(
+                                    content: Text("$name supprimé")));
+                              });
                             },
+                            child: ListTile(
+                              leading: Container(
+                                  height: 40,
+                                  width: 40,
+                                  color: Colors.grey[350],
+                                  child: Icon(
+                                    Icons.movie,
+                                    color: Colors.blue,
+                                  )),
+                              title: new Text(
+                                name,
+                              ),
+                              subtitle: new Text(path),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => VideoPlayerPage(
+                                        videoPlayerController: VideoPlayerController.file(File(path)),
+                                        looping: true,
+                                        name: name,
+                                )));
+                              },
+                            ),
                           );
                         },
                         separatorBuilder: (BuildContext context, int index) =>

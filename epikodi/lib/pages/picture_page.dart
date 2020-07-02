@@ -306,7 +306,7 @@ class _PicturePageState extends State<PicturePage> {
                           final path = isMultiPath
                               ? snapshot.data.values.toList()[index].toString()
                               : _paths;
-                          return Dismissible(
+                          return new Dismissible(
                             background: Container(
                               color: Colors.red,
                               child: Align(

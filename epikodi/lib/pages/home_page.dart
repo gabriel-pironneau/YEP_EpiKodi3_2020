@@ -1,14 +1,20 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:epikodi/pages/mixcloud_page.dart';
 import 'package:epikodi/pages/music_pages.dart';
 import 'package:epikodi/pages/video_page.dart';
+import 'package:epikodi/pages/video_player_net.dart';
+import 'package:epikodi/pages/youtube_page.dart';
 import 'package:epikodi/widgets/value_tile.dart';
+import 'package:epikodi/widgets/video_player_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_weather_icons/flutter_weather_icons.dart';
+import 'package:video_player/video_player.dart';
 import 'package:weather/weather.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class AccueilPage extends StatefulWidget {
   AccueilPage({Key key}) : super(key: key);
@@ -19,7 +25,7 @@ class AccueilPage extends StatefulWidget {
 
 class _AccueilPageState extends State<AccueilPage> {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  Future<int> _counter;
+  //Future<int> _counter;
   Future<Map<String, dynamic>> _musics;
   Future<Map<String, dynamic>> _pictures;
   Future<Map<String, dynamic>> _videos;
@@ -32,6 +38,7 @@ class _AccueilPageState extends State<AccueilPage> {
   Map<String, IconData> _icon = {
     "Clouds": WeatherIcons.wiDayCloudy,
     "Rain": WeatherIcons.wiDayRain,
+    "Thunderstorm": WeatherIcons.wiDayThunderstorm
   };
 
   @override
@@ -48,7 +55,14 @@ class _AccueilPageState extends State<AccueilPage> {
   Future<bool> _getYtSwitch() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool counter = (prefs.getBool('yt') ?? false);
-    
+
+    return counter;
+  }
+
+  Future<bool> _getMcSwitch() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool counter = (prefs.getBool('mc') ?? false);
+
     return counter;
   }
 
@@ -91,12 +105,39 @@ class _AccueilPageState extends State<AccueilPage> {
     return _mydata;
   }
 
+  Future<List<Map<String, dynamic>>> myyt() async {
+    final SharedPreferences prefs = await _prefs;
+    List<Map<String, dynamic>> _mydata = [];
+    final String _data = (prefs.getString('yt4_added') ?? null);
+    print('data !!! ' + _data);
+
+    List<String> _testdata = _data.split(', ');
+    for (int i = 0; i < _testdata.length; i++) {
+      _mydata.add(jsonDecode(_testdata[i]));
+    }
+    return _mydata;
+  }
+
+  Future<List<Map<String, dynamic>>> mymc() async {
+    final SharedPreferences prefs = await _prefs;
+    List<Map<String, dynamic>> _mydata = [];
+    final String _data = (prefs.getString('mc_added') ?? null);
+    print('data !!! ' + _data);
+
+    List<String> _testdata = _data.split(', ');
+    for (int i = 0; i < _testdata.length; i++) {
+      _mydata.add(jsonDecode(_testdata[i]));
+    }
+    return _mydata;
+  }
+
   @override
   Widget build(BuildContext context) {
     return new SingleChildScrollView(
       child: Column(children: <Widget>[
         meteoSection(),
         ytSection(),
+        mcSection(),
         serparatorCat('Music', Icons.audiotrack),
         musicSection(),
         serparatorCat('Picture', Icons.collections),
@@ -111,6 +152,7 @@ class _AccueilPageState extends State<AccueilPage> {
 
   Widget ytSection() {
     return new Container(
+      color: Colors.black,
       child: FutureBuilder(
           future: _getYtSwitch(),
           initialData: false,
@@ -158,16 +200,24 @@ class _AccueilPageState extends State<AccueilPage> {
   Widget serparatorCatYt(String title) {
     return Container(
       color: Colors.black,
-      padding: EdgeInsets.all(15.0),
+      padding: EdgeInsets.only(top: 15.0, left: 15.0),
       width: MediaQuery.of(context).size.width,
       child: Row(
         children: [
           SvgPicture.asset('assets/icons8-lecture-de-youtube.svg'),
           SizedBox(width: 10),
-          Text(
-            title,
-            style: TextStyle(
-                fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => YoutubePage()));
+            },
+            child: Text(
+              title,
+              style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -175,7 +225,318 @@ class _AccueilPageState extends State<AccueilPage> {
   }
 
   Container youtubeSection() {
-    return Container(height: 160, color: Colors.black, child: Center(child:CircularProgressIndicator()),);
+    return Container(
+      height: 190,
+      color: Colors.black,
+      child: FutureBuilder<List<Map<String, dynamic>>>(
+        future: myyt(),
+        builder: (BuildContext context,
+            AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              return CircularProgressIndicator();
+            default:
+              if (snapshot.hasError) {
+                return Center(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                      GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => YoutubePage()));
+                          },
+                          child: Icon(
+                            Icons.add_circle,
+                            size: 35,
+                            color: Colors.blue,
+                          )),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          'Add videos',
+                          style: TextStyle(fontSize: 15),
+                        ),
+                      )
+                    ]));
+              } else {
+                print("yt nb : " + snapshot.data.length.toString());
+                if (snapshot.data.length == 0) {
+                  return Center(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                        GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => YoutubePage()));
+                            },
+                            child: Icon(
+                              Icons.add_circle,
+                              size: 35,
+                              color: Colors.blue,
+                            )),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            'Add Youtube videos',
+                            style: TextStyle(fontSize: 15),
+                          ),
+                        )
+                      ]));
+                } else {
+                  return Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 190,
+                    child: ListView.builder(
+                      itemCount: snapshot.data.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (BuildContext context, int index) {
+                        final String name = snapshot.data[index]['title'];
+                        final String thumb =
+                            snapshot.data[index]['videoThumbnail'];
+                            final String id =
+                            snapshot.data[index]['videoId'];
+                        //final String path = snapshot.data[index]['description'];
+                        return GestureDetector(
+                          onTap: () { Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => VideoPlayerNetPage(
+                                        id: id,
+                                       // videoPlayerController: VideoPlayerController.network("https://www.youtube.com/watch?v=dSBRQUebo7g"),
+                                        looping: true,
+                                        name: name,
+                                )));},
+                          child: Card(
+                            color: Colors.black,
+                            child: Container(
+                              //padding: EdgeInsets.all(10.0),
+                              width: 190,
+                              child: Column(
+                                //crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Container(
+                                    // padding: EdgeInsets.all(8.0),
+                                    height: 140,
+                                    width: MediaQuery.of(context).size.width,
+                                    // color: Colors.grey[350],
+                                    child: Image.network(thumb),
+                                  ),
+                                  Expanded(
+                                      child: Container(
+                                          padding: EdgeInsets.only(
+                                              left: 8, right: 8, bottom: 2),
+                                          alignment: Alignment.center,
+                                          child: Text(name,
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold),
+                                              maxLines: 2,
+                                              overflow: TextOverflow.ellipsis))),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                }
+                // return Container();
+              }
+          }
+        },
+      ),
+    );
+  }
+
+  //// MixCloud
+
+  Widget mcSection() {
+    return new Container(
+      color: Colors.black,
+      child: FutureBuilder(
+          future: _getMcSwitch(),
+          initialData: false,
+          builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+                return CircularProgressIndicator();
+              default:
+                if (snapshot.hasError) {
+                  return Container();
+                } else if (snapshot.data == true) {
+                  return Column(
+                    children: <Widget>[
+                      serparatorCatMc("MixCloud"),
+                      mixCloudSection(),
+                    ],
+                  );
+                }
+                return Container();
+            }
+          }),
+    );
+  }
+
+  Widget serparatorCatMc(String title) {
+    return Container(
+      color: Colors.purple[900],
+      padding: EdgeInsets.only(top: 10.0, left: 15.0, right: 10.0,bottom: 10.0),
+      width: MediaQuery.of(context).size.width,
+      child: Row(
+        children: [
+          SvgPicture.asset('assets/icons8-mixcloud.svg'),
+          SizedBox(width: 15),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => MixcloudPage()));
+            },
+            child: Text(
+              title,
+              style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container mixCloudSection() {
+    return Container(
+      height: 190,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topRight,
+          end: Alignment.bottomLeft,
+          colors: [Colors.purple[900], Colors.purple[600]],
+        ),
+      ),
+      child: FutureBuilder<List<Map<String, dynamic>>>(
+        future: mymc(),
+        builder: (BuildContext context,
+            AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              return CircularProgressIndicator();
+            default:
+              if (snapshot.hasError) {
+                return Center(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                      GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => MixcloudPage()));
+                          },
+                          child: Icon(
+                            Icons.add_circle,
+                            size: 35,
+                            color: Colors.blue,
+                          )),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          'Add videos',
+                          style: TextStyle(fontSize: 15),
+                        ),
+                      )
+                    ]));
+              } else {
+                print("yt nb : " + snapshot.data.length.toString());
+                if (snapshot.data.length == 0) {
+                  return Center(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                        GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => MixcloudPage()));
+                            },
+                            child: Icon(
+                              Icons.add_circle,
+                              size: 35,
+                              color: Colors.blue,
+                            )),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Text(
+                            'Add musique from Mixcloud',
+                            style: TextStyle(fontSize: 15, color: Colors.white),
+                          ),
+                        )
+                      ]));
+                } else {
+                  return Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 190,
+                    child: ListView.builder(
+                      itemCount: snapshot.data.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (BuildContext context, int index) {
+                        final String name = snapshot.data[index]['title'];
+                        final String thumb =
+                            snapshot.data[index]['videoThumbnail'];
+                        //final String path = snapshot.data[index]['description'];
+                        return Card(
+                          color: Colors.transparent.withOpacity(0.5),
+                          child: Container(
+                            //padding: EdgeInsets.all(10.0),
+                            width: 190,
+                            child: Column(
+                              //crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Container(
+                                  // padding: EdgeInsets.all(8.0),
+                                  height: 140,
+                                  width: MediaQuery.of(context).size.width,
+                                  // color: Colors.grey[350],
+                                  child: Image.network(thumb),
+                                ),
+                                Expanded(
+                                    child: Container(
+                                        padding: EdgeInsets.only(
+                                            left: 8, right: 8, bottom: 2),
+                                        alignment: Alignment.center,
+                                        child: Text(name,
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis))),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                }
+                // return Container();
+              }
+          }
+        },
+      ),
+    );
   }
 
   Container meteoSection() {
@@ -245,7 +606,7 @@ class _AccueilPageState extends State<AccueilPage> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: <Widget>[
-                                          ValueTileWhite("max",
+                                          ValueTileWhite("min",
                                               '${this.weather.tempMin.celsius.round()}°'),
                                           Padding(
                                             padding: const EdgeInsets.only(
@@ -257,7 +618,7 @@ class _AccueilPageState extends State<AccueilPage> {
                                               color: Colors.white,
                                             )),
                                           ),
-                                          ValueTileWhite("min",
+                                          ValueTileWhite("max",
                                               '${this.weather.tempMax.celsius.round()}°'),
                                         ],
                                       ),
@@ -354,8 +715,8 @@ class _AccueilPageState extends State<AccueilPage> {
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (BuildContext context, int index) {
                         final String name = snapshot.data.keys.toList()[index];
-                        final String path =
-                            snapshot.data.values.toList()[index].toString();
+                        // final String path =
+                        //     snapshot.data.values.toList()[index].toString();
                         return Card(
                           child: Container(
                             //padding: EdgeInsets.all(10.0),
@@ -533,8 +894,8 @@ class _AccueilPageState extends State<AccueilPage> {
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (BuildContext context, int index) {
                         final String name = snapshot.data.keys.toList()[index];
-                        final path =
-                            snapshot.data.values.toList()[index].toString();
+                        // final path =
+                        //     snapshot.data.values.toList()[index].toString();
                         return Card(
                           child: Container(
                             padding: EdgeInsets.all(10.0),
