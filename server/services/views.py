@@ -271,5 +271,32 @@ def tvD():
     return response, 200
 
 
+
+@app.route('/searchP', methods = ['GET'])
+def searchP():
+    order_by = 'relevant'
+    if (request.args.get("order_by")):
+        order_by = request.args.get("order_by")
+
+    page = 1
+    if (request.args.get("page")):
+        page = request.args.get("page")
+
+    response = requests.get("https://api.unsplash.com/search/photos/?client_id=d0GbiBqf1KPD7n9GigAy0JF3JvE3UK4vIs56_9-vnac&page={}&query={}&order_by={}".format(page, request.args.get("query"), order_by))
+    response = response.json()
+    return response, 200
+
+@app.route('/detailP', methods = ['GET'])
+def detailP():
+    response = requests.get("https://api.unsplash.com/photos/{}?client_id=d0GbiBqf1KPD7n9GigAy0JF3JvE3UK4vIs56_9-vnac".format(request.args.get("id")))
+    response = response.json()
+    return response, 200
+
+@app.route('/randomP', methods = ['GET'])
+def randomP():
+    response = requests.get("https://api.unsplash.com/photos/random/?client_id=d0GbiBqf1KPD7n9GigAy0JF3JvE3UK4vIs56_9-vnac")
+    response = response.json()
+    return response, 200
+
 if __name__ == "__main__":
     app.run()

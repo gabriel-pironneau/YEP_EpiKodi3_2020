@@ -71,3 +71,22 @@ tv {
     passer en parametres l'id du film récuperer grace au call précédent
     faire un premiere appel sans parametres page pour obtenir la 1ere page, ainsi qu'un parametres "total_pages" qui permetra de faire appel au page suivante
 }
+
+
+pictures {
+    {
+      /randomP (random photo)
+    }
+    aucun paraetres
+
+    {
+      /searchP (search pictures)
+    }
+    parametres optionel : page(int), order_by(relevant (default), latest)
+    parametres obligatoire : query (string, le mot recherché. example : apple)
+
+    {
+      /detailP (detaill pictures)
+    }
+    parametre obligatoire : id (récupéré grace a /searchP)
+}
