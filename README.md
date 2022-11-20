@@ -92,9 +92,10 @@ It is also responsible for the creation & handling of media players as well as t
 
 gabriel.pironneau@epitech.eu
 
-### Desktop Developer
+### Desktop Developers
 
 hugo.lacour@epitech.eu
+gabriel.pironneau@epitech.eu
 
 ### Mobile Developer
 
