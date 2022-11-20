@@ -30,7 +30,7 @@ Currently, the available functionalities are :
 | Python | v3+ |
 | Pip | v20+ |
 | Flutter | v+ |
-| PyQt | v+ |
+| JavaFx | v+ |
 
 You might be able to run the project with versions older than those listed above.
 
@@ -69,7 +69,7 @@ Runs on:
 * `127.0.0.1:5000`.
 
 
-### PyQt
+### JavaFx
 
 Used as the desktop client. It is responsible of the display and visually structured all the datas for the user experience.
 It is also responsible for the creation & handling of media players.
