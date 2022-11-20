@@ -3,7 +3,7 @@
 ## Description
 
 3rd year free chosen project in which the goal is to implement a __Media Center Desktop Application__ that allows users to play and view most videos, music, podcasts, and other digital media files from local and network storage media and the internet.
-It is inspired from the famous __Kodi Media Center Application__ : [FlipBoard]( https://kodi.tv/).
+It is inspired from the famous __Kodi Media Center Application__ : [Kodi]( https://kodi.tv/).
 
 
 The user can chose which services he/she wants to use.
